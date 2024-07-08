@@ -2,7 +2,7 @@ from django import forms
 from django.conf import settings
 from django.core import validators
 from django.db import models
-from django.utils import six, timezone
+from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 import django
@@ -24,7 +24,7 @@ class BaseEncryptedField (models.Field):
         self.cipher_key = kwargs.pop('key', getattr(settings, 'PGCRYPTO_DEFAULT_KEY', ''))
         self.charset = kwargs.pop('charset', 'utf-8')
         if self.cipher_name == 'AES':
-            if isinstance(self.cipher_key, six.text_type):
+            if isinstance(self.cipher_key, str):
                 self.cipher_key = self.cipher_key.encode(self.charset)
             self.cipher_key = aes_pad_key(self.cipher_key)
         mod = __import__('Crypto.Cipher', globals(), locals(), [self.cipher_name], 0)
@@ -70,7 +70,7 @@ class BaseEncryptedField (models.Field):
         """
         Returns whether the given value is encrypted (and armored) or not.
         """
-        return isinstance(value, six.string_types) and value.startswith('-----BEGIN')
+        return isinstance(value, str) and value.startswith('-----BEGIN')
 
     def to_python(self, value):
         if self.is_encrypted(value):
